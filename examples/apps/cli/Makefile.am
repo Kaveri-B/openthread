@@ -66,6 +66,16 @@ LDADD_COMMON                                                          += \
     $(NULL)
 endif # OPENTHREAD_EXAMPLES_POSIX
 
+if OPENTHREAD_EXAMPLES_ADUCM3029
+LDADD_COMMON                                                          += \
+    $(top_builddir)/examples/platforms/aducm3029/libopenthread-aducm3029.a     \
+    $(NULL)
+
+LDFLAGS_COMMON                                                        += \
+    -T $(top_srcdir)/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/GCC/ADuCM3029.ld                 \
+    $(NULL)
+endif # OPENTHREAD_EXAMPLES_ADUCM3029
+
 if OPENTHREAD_EXAMPLES_CC2538
 LDADD_COMMON                                                          += \
     $(top_builddir)/examples/platforms/cc2538/libopenthread-cc2538.a     \

@@ -33,6 +33,7 @@ EXTRA_DIST                              = \
     nlbuild-autotools                     \
     openthread-test-driver                \
     NordicSemiconductor                   \
+    adi		                          \
     $(NULL)
 
 if OPENTHREAD_EXAMPLES_EFR32

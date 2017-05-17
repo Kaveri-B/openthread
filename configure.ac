@@ -1053,11 +1053,11 @@ AC_DEFINE_UNQUOTED([OPENTHREAD_ENABLE_RAW_LINK_API],[${OPENTHREAD_ENABLE_RAW_LIN
 
 AC_ARG_WITH(examples,
     [AS_HELP_STRING([--with-examples=TARGET],
-        [Specify the examples from one of: none, posix, cc2538, cc2650, da15000, efr32, nrf52840 @<:@default=none@:>@.])],
+        [Specify the examples from one of: none, posix, aducm3029, cc2538, cc2650, da15000, efr32, nrf52840 @<:@default=none@:>@.])],
     [
         case "${with_examples}" in
 
-        none|posix|cc2538|cc2650|da15000|efr32|nrf52840)
+        none|posix|aducm3029|cc2538|cc2650|da15000|efr32|nrf52840)
             ;;
         *)
             AC_MSG_ERROR([Invalid value ${with_examples} for --with-examples])
@@ -1073,6 +1073,11 @@ case ${with_examples} in
     posix)
         OPENTHREAD_EXAMPLES_POSIX=1
         AC_DEFINE_UNQUOTED([OPENTHREAD_EXAMPLES_POSIX],[${OPENTHREAD_EXAMPLES_POSIX}],[Define to 1 if you want to use posix examples])
+        ;;
+
+    aducm3029)
+        OPENTHREAD_EXAMPLES_ADUCM3029=1
+        AC_DEFINE_UNQUOTED([OPENTHREAD_EXAMPLES_ADUCM3029],[${OPENTHREAD_EXAMPLES_ADUCM3029}],[Define to 1 if you want to use aducm3029 examples])
         ;;
 
     cc2538)
@@ -1111,6 +1116,9 @@ AC_DEFINE_UNQUOTED([OPENTHREAD_EXAMPLES],[${OPENTHREAD_EXAMPLES}],[OpenThread ex
 
 AC_SUBST(OPENTHREAD_EXAMPLES_POSIX)
 AM_CONDITIONAL([OPENTHREAD_EXAMPLES_POSIX], [test "${OPENTHREAD_EXAMPLES}" = "posix"])
+
+AC_SUBST(OPENTHREAD_EXAMPLES_ADUCM3029)
+AM_CONDITIONAL([OPENTHREAD_EXAMPLES_ADUCM3029], [test "${OPENTHREAD_EXAMPLES}" = "aducm3029"])
 
 AC_SUBST(OPENTHREAD_EXAMPLES_CC2538)
 AM_CONDITIONAL([OPENTHREAD_EXAMPLES_CC2538], [test "${OPENTHREAD_EXAMPLES}" = "cc2538"])
@@ -1283,6 +1291,7 @@ examples/apps/Makefile
 examples/apps/cli/Makefile
 examples/apps/ncp/Makefile
 examples/platforms/Makefile
+examples/platforms/aducm3029/Makefile
 examples/platforms/cc2538/Makefile
 examples/platforms/cc2650/Makefile
 examples/platforms/da15000/Makefile
