@@ -34,15 +34,73 @@
 
 #include "platform-aducm3029.h"
 
+#include <system_ADuCM3029.h>
+#include <adi_callback.h>
+#include <drivers/wdt/adi_wdt.h>
+#include <drivers/pwr/adi_pwr.h>
+#include <drivers/flash/adi_flash.h>
+
+
+#define SPI2_SCLK_PORTP1_MUX  ((uint16_t) ((uint16_t) 1<<4))
+#define SPI2_MISO_PORTP1_MUX  ((uint16_t) ((uint16_t) 1<<6))
+#define SPI2_MOSI_PORTP1_MUX  ((uint16_t) ((uint16_t) 1<<8))
+#define SPI2_CS_2_PORTP2_MUX  ((uint32_t) ((uint32_t) 2<<20))
+#define SPI2_CS_3_PORTP2_MUX  ((uint16_t) ((uint16_t) 2<<14))
+#define UART0_TX_PORTP0_MUX  ((uint32_t) ((uint32_t) 1<<20))
+#define UART0_RX_PORTP0_MUX  ((uint32_t) ((uint32_t) 1<<22))
+#define UART0_TX_PORTP0_MASK  ~((uint32_t) ((uint32_t) 3<<20)) 
+#define UART0_RX_PORTP0_MASK  ~((uint32_t) ((uint32_t) 3<<22))
+
+#define SPI0_SCLK_PORTP0_MUX  ((uint16_t) ((uint16_t) 1<<0))
+#define SPI0_MOSI_PORTP0_MUX  ((uint16_t) ((uint16_t) 1<<2))
+#define SPI0_MISO_PORTP0_MUX  ((uint16_t) ((uint16_t) 1<<4))
+#define SPI0_CS_0_PORTP0_MUX  ((uint32_t) ((uint16_t) 1<<6))
+
+static uint8_t FlashDeviceMem[ADI_FEE_MEMORY_SIZE]  __attribute__ ((aligned (4)));;
+static ADI_FEE_HANDLE hFlashDevice = NULL;
+
+
+static void adi_wdt_callback(void *pCBParam, uint32_t Event, void *pArg)
+{
+    
+}
+
+static void adi_initpinmux(void)
+{
+    /* Port Control MUX registers */
+    *((volatile uint32_t *)REG_GPIO0_CFG) = UART0_TX_PORTP0_MUX  | 
+                                            UART0_RX_PORTP0_MUX  | 
+                                            SPI0_SCLK_PORTP0_MUX | 
+                                            SPI0_MOSI_PORTP0_MUX | 
+                                            SPI0_MISO_PORTP0_MUX | 
+                                            SPI0_CS_0_PORTP0_MUX;
+    
+    *((volatile uint32_t *)REG_GPIO1_CFG) = SPI2_SCLK_PORTP1_MUX | 
+                                            SPI2_MISO_PORTP1_MUX | 
+                                            SPI2_MOSI_PORTP1_MUX;
+    
+    *((volatile uint32_t *)REG_GPIO2_CFG) = SPI2_CS_2_PORTP2_MUX | 
+                                            SPI2_CS_3_PORTP2_MUX;
+}
 
 void PlatformInit(int argc, char *argv[])
 {
+    (void)argc;
+    (void)argv;
+
+    SystemInit();
+    adi_initpinmux();
+    adi_wdt_Enable(false, adi_wdt_callback);
+    adi_pwr_Init();
+    adi_pwr_SetLFClockMux(ADI_CLOCK_MUX_LFCLK_LFXTAL);
+    adi_pwr_EnableClockSource(ADI_CLOCK_SOURCE_LFXTAL, true);
+    adi_pwr_SetClockDivider(ADI_CLOCK_HCLK, 1);
+    adi_pwr_SetClockDivider(ADI_CLOCK_PCLK, 1);
+    adi_fee_Open(0, FlashDeviceMem, sizeof(FlashDeviceMem), &hFlashDevice);
+
     aducm3029AlarmInit();
     aducm3029RandomInit();
     aducm3029RadioInit();
-
-    (void)argc;
-    (void)argv;
 }
 
 void PlatformProcessDrivers(otInstance *aInstance)

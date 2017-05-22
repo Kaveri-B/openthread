@@ -37,8 +37,9 @@ override CXXFLAGS                            := $(filter-out -pedantic-errors,$(
 ADUCM3029_SDK_SRCDIR                            = $(top_srcdir)/third_party/adi/ADuCM302x_IoT_DFP/1.0.0
 
 libopenthread_aducm3029_a_CPPFLAGS                                                = \
-    -D__ADUCM3029__                                                     \
-    -D__START=main                                                     \
+    -D__ADUCM3029__                                                             \
+    -D__START=main                                                              \
+    -DADI_DISABLE_INSTRUCTION_SRAM                                              \
     -I$(top_srcdir)/include                                                     \
     -I$(top_srcdir)/examples/platforms                                          \
     -I$(top_srcdir)/src/core                                                    \
@@ -58,7 +59,7 @@ libopenthread_aducm3029_a_SOURCES            = \
     radio.c                                 \
     random.c                                \
     uart.c                                  \
-    startup-gcc.c                                  \
+    startup-gcc.c                           \
     $(NULL)
 
 if OPENTHREAD_ENABLE_DIAG
@@ -69,7 +70,17 @@ endif
 
 nodist_libopenthread_aducm3029_a_SOURCES           =  \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/system_ADuCM3029.c                                         \
-    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/GCC/startup_ADuCM3029.c                                         \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/GCC/startup_ADuCM3029.c                                    \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/wdt/adi_wdt.c                                      \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/pwr/adi_pwr.c                                      \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/flash/adi_flash.c                                  \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/dma/adi_dma.c                                      \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/gpio/adi_gpio.c                                    \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/spi/adi_spi.c                                      \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/tmr/adi_tmr.c                                      \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/uart/adi_uart.c                                    \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/rng/adi_rng.c                                      \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/crypto/adi_crypto.c                                \
     $(NULL)
 
 noinst_HEADERS                                                                = \
