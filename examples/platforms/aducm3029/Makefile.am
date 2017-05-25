@@ -38,7 +38,8 @@ ADUCM3029_SDK_SRCDIR                            = $(top_srcdir)/third_party/adi/
 
 libopenthread_aducm3029_a_CPPFLAGS                                                = \
     -D__ADUCM3029__                                                             \
-    -D__START=main                                                              \
+    -D__START=main                                                             \
+    -D__STARTUP_CLEAR_BSS                                                       \
     -DADI_DISABLE_INSTRUCTION_SRAM                                              \
     -I$(top_srcdir)/include                                                     \
     -I$(top_srcdir)/examples/platforms                                          \
