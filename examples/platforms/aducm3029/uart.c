@@ -37,37 +37,44 @@
 #include "openthread/types.h"
 #include "openthread/platform/uart.h"
 
+#include "utils/code_utils.h"
+
 #include "platform-aducm3029.h"
 
 
-
-ThreadError otPlatUartEnable(void)
+enum
 {
+    kPlatformClock = 32000000,
+    kBaudRate = 115200,
+    kReceiveBufferSize = 128,
+};
 
-    return kThreadError_NotImplemented;
+static void processReceive(void);
+static void processTransmit(void);
+
+otError otPlatUartEnable(void)
+{
+    return OT_ERROR_NOT_IMPLEMENTED;
 }
 
-ThreadError otPlatUartDisable(void)
+otError otPlatUartDisable(void)
 {
-    return kThreadError_NotImplemented;
+    return OT_ERROR_NOT_IMPLEMENTED;
 }
 
-ThreadError otPlatUartSend(const uint8_t *aBuf, uint16_t aBufLength)
+otError otPlatUartSend(const uint8_t *aBuf, uint16_t aBufLength)
 {
     (void)aBuf;
     (void)aBufLength;
-
-    return kThreadError_NotImplemented;
+    return OT_ERROR_NOT_IMPLEMENTED;
 }
 
 void processReceive(void)
 {
-
 }
 
 void processTransmit(void)
 {
-
 }
 
 void aducm3029UartProcess(void)
@@ -76,6 +83,3 @@ void aducm3029UartProcess(void)
     processTransmit();
 }
 
-void UART0IntHandler(void)
-{
-}

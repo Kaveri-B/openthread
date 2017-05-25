@@ -49,10 +49,10 @@ uint32_t otPlatRandomGet(void)
     return 0;
 }
 
-ThreadError otPlatRandomGetTrue(uint8_t *aOutput, uint16_t aOutputLength)
+otError otPlatRandomGetTrue(uint8_t *aOutput, uint16_t aOutputLength)
 {
     (void)aOutput;
     (void)aOutputLength;
    
-    return kThreadError_NotImplemented;
+    return OT_ERROR_NOT_IMPLEMENTED;
 }

@@ -37,9 +37,9 @@
 #include "platform-aducm3029.h"
 
 
-ThreadError utilsFlashInit(void)
+otError utilsFlashInit(void)
 {
-    return kThreadError_NotImplemented;
+    return OT_ERROR_NOT_IMPLEMENTED;
 }
 
 uint32_t utilsFlashGetSize(void)
@@ -47,18 +47,18 @@ uint32_t utilsFlashGetSize(void)
     return 0;
 }
 
-ThreadError utilsFlashErasePage(uint32_t aAddress)
+otError utilsFlashErasePage(uint32_t aAddress)
 {
     (void)aAddress;
 
-    return kThreadError_NotImplemented;
+    return OT_ERROR_NOT_IMPLEMENTED;
 }
 
-ThreadError utilsFlashStatusWait(uint32_t aTimeout)
+otError utilsFlashStatusWait(uint32_t aTimeout)
 {
     (void)aTimeout;
 
-    return kThreadError_NotImplemented;
+    return OT_ERROR_NOT_IMPLEMENTED;
 }
 
 uint32_t utilsFlashWrite(uint32_t aAddress, uint8_t *aData, uint32_t aSize)
