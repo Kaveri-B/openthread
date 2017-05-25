@@ -34,6 +34,7 @@ EXTRA_DIST                              = \
     nlbuild-autotools                     \
     openthread-test-driver                \
     NordicSemiconductor                   \
+    synopsys                              \
     adi		                          \
     $(NULL)
 
