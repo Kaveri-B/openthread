@@ -80,7 +80,8 @@ nodist_libopenthread_aducm3029_a_SOURCES           =  \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/spi/adi_spi.c                                      \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/tmr/adi_tmr.c                                      \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/uart/adi_uart.c                                    \
-    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/rng/adi_rng.c                                      \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/rng/adi_rng.c   				\
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/rtc/adi_rtc.c                                     \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/crypto/adi_crypto.c                                \
     $(NULL)
 
