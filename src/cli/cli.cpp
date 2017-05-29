@@ -49,6 +49,7 @@
 
 #include <openthread/openthread.h>
 #include <openthread/commissioner.h>
+#include <openthread/icmp6.h>
 #include <openthread/joiner.h>
 
 #if OPENTHREAD_FTD
@@ -1547,11 +1548,11 @@ void Interpreter::s_HandleIcmpReceive(void *aContext, otMessage *aMessage, const
 }
 
 void Interpreter::HandleIcmpReceive(Message &aMessage, const Ip6::MessageInfo &aMessageInfo,
-                                    const Ip6::IcmpHeader &aIcmpHeader)
+                                    const otIcmp6Header &aIcmpHeader)
 {
     uint32_t timestamp = 0;
 
-    VerifyOrExit(aIcmpHeader.GetType() == kIcmp6TypeEchoReply);
+    VerifyOrExit(aIcmpHeader.mType == OT_ICMP6_TYPE_ECHO_REPLY);
 
     sServer->OutputFormat("%d bytes from ", aMessage.GetLength() - aMessage.GetOffset());
     sServer->OutputFormat("%x:%x:%x:%x:%x:%x:%x:%x",
@@ -1563,7 +1564,7 @@ void Interpreter::HandleIcmpReceive(Message &aMessage, const Ip6::MessageInfo &a
                           HostSwap16(aMessageInfo.GetPeerAddr().mFields.m16[5]),
                           HostSwap16(aMessageInfo.GetPeerAddr().mFields.m16[6]),
                           HostSwap16(aMessageInfo.GetPeerAddr().mFields.m16[7]));
-    sServer->OutputFormat(": icmp_seq=%d hlim=%d", aIcmpHeader.GetSequence(), aMessageInfo.mHopLimit);
+    sServer->OutputFormat(": icmp_seq=%d hlim=%d", HostSwap16(aIcmpHeader.mData.m16[1]), aMessageInfo.mHopLimit);
 
     if (aMessage.Read(aMessage.GetOffset(), sizeof(uint32_t), &timestamp) >=
         static_cast<int>(sizeof(uint32_t)))
@@ -1715,12 +1716,12 @@ exit:
     AppendResult(error);
 }
 
-void Interpreter::s_HandleLinkPcapReceive(const RadioPacket *aFrame, void *aContext)
+void Interpreter::s_HandleLinkPcapReceive(const otRadioFrame *aFrame, void *aContext)
 {
     static_cast<Interpreter *>(aContext)->HandleLinkPcapReceive(aFrame);
 }
 
-void Interpreter::HandleLinkPcapReceive(const RadioPacket *aFrame)
+void Interpreter::HandleLinkPcapReceive(const otRadioFrame *aFrame)
 {
     sServer->OutputFormat("\r\n");
 
@@ -2411,29 +2412,25 @@ void Interpreter::ProcessState(int argc, char *argv[])
     {
         switch (otThreadGetDeviceRole(mInstance))
         {
-        case kDeviceRoleOffline:
-            sServer->OutputFormat("offline\r\n");
-            break;
-
-        case kDeviceRoleDisabled:
+        case OT_DEVICE_ROLE_DISABLED:
             sServer->OutputFormat("disabled\r\n");
             break;
 
-        case kDeviceRoleDetached:
+        case OT_DEVICE_ROLE_DETACHED:
             sServer->OutputFormat("detached\r\n");
             break;
 
-        case kDeviceRoleChild:
+        case OT_DEVICE_ROLE_CHILD:
             sServer->OutputFormat("child\r\n");
             break;
 
 #if OPENTHREAD_FTD
 
-        case kDeviceRoleRouter:
+        case OT_DEVICE_ROLE_ROUTER:
             sServer->OutputFormat("router\r\n");
             break;
 
-        case kDeviceRoleLeader:
+        case OT_DEVICE_ROLE_LEADER:
             sServer->OutputFormat("leader\r\n");
             break;
 #endif  // OPENTHREAD_FTD
