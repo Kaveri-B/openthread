@@ -82,7 +82,7 @@ static void adi_initpinmux(void)
     *((volatile uint32_t *)REG_GPIO2_CFG) = SPI2_CS_2_PORTP2_MUX | 
                                             SPI2_CS_3_PORTP2_MUX;
 }
-
+extern void otPlatUartTest(void);
 void PlatformInit(int argc, char *argv[])
 {
     (void)argc;
@@ -97,7 +97,7 @@ void PlatformInit(int argc, char *argv[])
     adi_pwr_SetClockDivider(ADI_CLOCK_HCLK, 1);
     adi_pwr_SetClockDivider(ADI_CLOCK_PCLK, 1);
     adi_fee_Open(0, FlashDeviceMem, sizeof(FlashDeviceMem), &hFlashDevice);
-
+      
     aducm3029AlarmInit();
     aducm3029RandomInit();
     aducm3029RadioInit();
