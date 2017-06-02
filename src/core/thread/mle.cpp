@@ -675,6 +675,11 @@ exit:
     return error;
 }
 
+const Ip6::Address &Mle::GetLinkLocalAddress(void) const
+{
+    return mLinkLocal64.GetAddress();
+}
+
 otError Mle::UpdateLinkLocalAddress(void)
 {
     mNetif.RemoveUnicastAddress(mLinkLocal64);
@@ -2204,7 +2209,7 @@ void Mle::HandleUdpReceive(Message &aMessage, const Ip6::MessageInfo &aMessageIn
     case Header::kCommandChildUpdateRequest:
         if (mRole == OT_DEVICE_ROLE_LEADER || mRole == OT_DEVICE_ROLE_ROUTER)
         {
-            mNetif.GetMle().HandleChildUpdateRequest(aMessage, aMessageInfo);
+            mNetif.GetMle().HandleChildUpdateRequest(aMessage, aMessageInfo, keySequence);
         }
         else
         {
