@@ -50,6 +50,7 @@
 
 #if OPENTHREAD_ENABLE_APPLICATION_COAP
 #include <coap/coap_header.hpp>
+#include "cli/cli_coap.hpp"
 #endif
 
 #include "common/code_utils.hpp"
@@ -94,6 +95,8 @@ struct Command
  */
 class Interpreter
 {
+    friend class Coap;
+
 public:
 
     /**
@@ -156,8 +159,8 @@ private:
         kDefaultJoinerTimeout = 120,    ///< Default timeout for Joiners, in seconds.
     };
 
-    void AppendResult(otError error);
-    void OutputBytes(const uint8_t *aBytes, uint8_t aLength);
+    void AppendResult(otError error) const;
+    void OutputBytes(const uint8_t *aBytes, uint8_t aLength) const;
 
     void ProcessHelp(int argc, char *argv[]);
     void ProcessAutoStart(int argc, char *argv[]);
@@ -226,7 +229,9 @@ private:
     void ProcessLinkQuality(int argc, char *argv[]);
     void ProcessMasterKey(int argc, char *argv[]);
     void ProcessMode(int argc, char *argv[]);
+#if OPENTHREAD_ENABLE_BORDER_ROUTER
     void ProcessNetworkDataRegister(int argc, char *argv[]);
+#endif
 #if OPENTHREAD_FTD || OPENTHREAD_ENABLE_MTD_NETWORK_DIAGNOSTIC
     void ProcessNetworkDiagnostic(int argc, char *argv[]);
 #endif // OPENTHREAD_FTD || OPENTHREAD_ENABLE_MTD_NETWORK_DIAGNOSTIC
@@ -238,19 +243,23 @@ private:
     void ProcessParent(int argc, char *argv[]);
     void ProcessPing(int argc, char *argv[]);
     void ProcessPollPeriod(int argc, char *argv[]);
+#if OPENTHREAD_ENABLE_BORDER_ROUTER
     void ProcessPrefix(int argc, char *argv[]);
     otError ProcessPrefixAdd(int argc, char *argv[]);
     otError ProcessPrefixRemove(int argc, char *argv[]);
     otError ProcessPrefixList(void);
+#endif
     void ProcessPromiscuous(int argc, char *argv[]);
 #if OPENTHREAD_FTD
     void ProcessPSKc(int argc, char *argv[]);
     void ProcessReleaseRouterId(int argc, char *argv[]);
 #endif
     void ProcessReset(int argc, char *argv[]);
+#if OPENTHREAD_ENABLE_BORDER_ROUTER
     void ProcessRoute(int argc, char *argv[]);
     otError ProcessRouteAdd(int argc, char *argv[]);
     otError ProcessRouteRemove(int argc, char *argv[]);
+#endif
 #if OPENTHREAD_FTD
     void ProcessRouter(int argc, char *argv[]);
     void ProcessRouterDowngradeThreshold(int argc, char *argv[]);
@@ -320,6 +329,12 @@ private:
 #if OPENTHREAD_ENABLE_DNS_CLIENT
     void HandleDnsResponse(const char *aHostname, Ip6::Address &aAddress, uint32_t aTtl, otError aResult);
 #endif
+
+#if OPENTHREAD_ENABLE_APPLICATION_COAP
+
+    Coap mCoap;
+
+#endif // OPENTHREAD_ENABLE_APPLICATION_COAP
 
     static const struct Command sCommands[];
 
