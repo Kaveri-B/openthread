@@ -39,6 +39,7 @@
 #include <drivers/wdt/adi_wdt.h>
 #include <drivers/pwr/adi_pwr.h>
 #include <drivers/flash/adi_flash.h>
+#include <drivers/gpio/adi_gpio.h>
 
 
 #define SPI2_SCLK_PORTP1_MUX  ((uint16_t) ((uint16_t) 1<<4))
@@ -56,16 +57,22 @@
 #define SPI0_MISO_PORTP0_MUX  ((uint16_t) ((uint16_t) 1<<4))
 #define SPI0_CS_0_PORTP0_MUX  ((uint32_t) ((uint16_t) 1<<6))
 
-static uint8_t FlashDeviceMem[ADI_FEE_MEMORY_SIZE]  __attribute__ ((aligned (4)));;
-static ADI_FEE_HANDLE hFlashDevice = NULL;
+#define SPI1_SCLK_PORTP1_MUX  ((uint16_t) ((uint16_t) 1<<12))
+#define SPI1_MISO_PORTP1_MUX  ((uint16_t) ((uint16_t) 1<<14))
+#define SPI1_MOSI_PORTP1_MUX  ((uint32_t) ((uint32_t) 1<<16))
+#define SPI1_CS_0_PORTP1_MUX  ((uint32_t) ((uint32_t) 1<<18))
+#define SYS_WAKEUP_SYS_WAKE1_PORTP1_MUX  ((uint16_t) ((uint16_t) 1<<0))
 
+static uint8_t FlashDeviceMem[ADI_FEE_MEMORY_SIZE]  __attribute__ ((aligned (4)));
+static ADI_FEE_HANDLE hFlashDevice = NULL;
+static uint8_t sGPIOCallbackMem[ADI_GPIO_MEMORY_SIZE] __attribute__((aligned(4)));
 
 static void adi_wdt_callback(void *pCBParam, uint32_t Event, void *pArg)
 {
     
 }
 
-static void adi_initpinmux(void)
+void adi_initpinmux(void)
 {
     /* Port Control MUX registers */
     *((volatile uint32_t *)REG_GPIO0_CFG) = UART0_TX_PORTP0_MUX  | 
@@ -75,14 +82,24 @@ static void adi_initpinmux(void)
                                             SPI0_MISO_PORTP0_MUX | 
                                             SPI0_CS_0_PORTP0_MUX;
     
-    *((volatile uint32_t *)REG_GPIO1_CFG) = SPI2_SCLK_PORTP1_MUX | 
-                                            SPI2_MISO_PORTP1_MUX | 
-                                            SPI2_MOSI_PORTP1_MUX;
+    *((volatile uint32_t *)REG_GPIO1_CFG) = SPI1_SCLK_PORTP1_MUX | 
+                                            SPI1_MISO_PORTP1_MUX | 
+                                            SPI1_MOSI_PORTP1_MUX |
+					    SPI1_CS_0_PORTP1_MUX |
+					    SYS_WAKEUP_SYS_WAKE1_PORTP1_MUX;
     
     *((volatile uint32_t *)REG_GPIO2_CFG) = SPI2_CS_2_PORTP2_MUX | 
                                             SPI2_CS_3_PORTP2_MUX;
 }
-extern void otPlatUartTest(void);
+
+void disable_CS3(void)
+{
+    *((volatile uint32_t *)REG_GPIO1_CFG) &= ~(SPI1_CS_0_PORTP1_MUX);
+    *((volatile uint32_t *)REG_GPIO1_CFG) &= ~SPI1_MISO_PORTP1_MUX;
+    adi_gpio_OutputEnable(ADI_GPIO_PORT1, ADI_GPIO_PIN_9, true);
+    adi_gpio_InputEnable(ADI_GPIO_PORT1, ADI_GPIO_PIN_8, true);
+}
+
 void PlatformInit(int argc, char *argv[])
 {
     (void)argc;
@@ -97,6 +114,13 @@ void PlatformInit(int argc, char *argv[])
     adi_pwr_SetClockDivider(ADI_CLOCK_HCLK, 1);
     adi_pwr_SetClockDivider(ADI_CLOCK_PCLK, 1);
     adi_fee_Open(0, FlashDeviceMem, sizeof(FlashDeviceMem), &hFlashDevice);
+    /* Initialize GPIO */
+    adi_gpio_Init(sGPIOCallbackMem, ADI_GPIO_MEMORY_SIZE);
+
+    /* Set priorities */
+    NVIC_SetPriority(SPI1_EVT_IRQn,0);
+    NVIC_SetPriority(XINT_EVT1_IRQn,1);
+    NVIC_SetPriority(SYS_GPIO_INTA_IRQn,1);
       
     aducm3029AlarmInit();
     aducm3029RandomInit();
@@ -109,6 +133,6 @@ void PlatformProcessDrivers(otInstance *aInstance)
     // should sleep and wait for interrupts here
 
     aducm3029UartProcess();
-    aducm3029RadioProcess(aInstance);
+    aducm3029RadioProcess(aInstance); 
     aducm3029AlarmProcess(aInstance);
 }

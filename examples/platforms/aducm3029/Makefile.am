@@ -44,6 +44,7 @@ libopenthread_aducm3029_a_CPPFLAGS                                              
     -I$(top_srcdir)/include                                                     \
     -I$(top_srcdir)/examples/platforms                                          \
     -I$(top_srcdir)/src/core                                                    \
+    -I$(top_srcdir)/examples/platforms/aducm3029                                \
     -I$(top_srcdir)/examples/platforms/aducm3029/CMSIS                          \
     -I$(ADUCM3029_SDK_SRCDIR)/Include		                                \
     -I$(ADUCM3029_SDK_SRCDIR)/Include/sys	                                \
@@ -80,9 +81,12 @@ nodist_libopenthread_aducm3029_a_SOURCES           =  \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/spi/adi_spi.c                                      \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/tmr/adi_tmr.c                                      \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/uart/adi_uart.c                                    \
-    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/rng/adi_rng.c   				\
-    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/rtc/adi_rtc.c                                     \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/rng/adi_rng.c                                      \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/rtc/adi_rtc.c                                      \
     @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/crypto/adi_crypto.c                                \
+    @top_builddir@/third_party/adi/ADuCM302x_IoT_DFP/1.0.0/Source/drivers/xint/adi_xint.c                                    \
+    @top_builddir@/examples/platforms/aducm3029/ADF7242.c				                                     \
+    @top_builddir@/examples/platforms/aducm3029/ADF7242_HAL.c				                                     \
     $(NULL)
 
 noinst_HEADERS                                                                = \

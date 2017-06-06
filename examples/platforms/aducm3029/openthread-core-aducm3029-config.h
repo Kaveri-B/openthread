@@ -34,21 +34,13 @@
 #ifndef OPENTHREAD_CORE_ADUCM3029_CONFIG_H_
 #define OPENTHREAD_CORE_ADUCM3029_CONFIG_H_
 
- /**
-  * @def OPENTHREAD_CONFIG_ENABLE_SOFTWARE_ACK_TIMEOUT
+/**
+  * @def OPENTHREAD_CONFIG_LEGACY_TRANSMIT_DONE
   *
-  * Define to 1 if you want to enable software ACK timeout logic.
-  *
-  */
-#define OPENTHREAD_CONFIG_ENABLE_SOFTWARE_ACK_TIMEOUT          1
-
- /**
-  * @def OPENTHREAD_CONFIG_ENABLE_SOFTWARE_RETRANSMIT
-  *
-  * Define to 1 if you want to enable software retransmission logic.
+  * Define to 1 if you want use legacy transmit done.
   *
   */
-#define OPENTHREAD_CONFIG_ENABLE_SOFTWARE_RETRANSMIT           1
+#define OPENTHREAD_CONFIG_LEGACY_TRANSMIT_DONE 1
 
  /**
   * @def OPENTHREAD_CONFIG_ENABLE_SOFTWARE_ENERGY_SCAN
