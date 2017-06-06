@@ -30,15 +30,32 @@
 #include "openthread/platform/misc.h"
 #include "platform-aducm3029.h"
 
+#include "system_ADuCM3029.h"
+
 void otPlatReset(otInstance *aInstance)
 {
     (void)aInstance;
+    NVIC_SystemReset();
 }
 
 otPlatResetReason otPlatGetResetReason(otInstance *aInstance)
 {
     (void)aInstance;
-    return OT_PLAT_RESET_REASON_POWER_ON;
+    
+    if(pADI_PMG0->RST_STAT &  BITM_PMG_RST_STAT_POR)
+        return OT_PLAT_RESET_REASON_POWER_ON;
+
+    else if(pADI_PMG0->RST_STAT &  BITM_PMG_RST_STAT_EXTRST)
+	return OT_PLAT_RESET_REASON_EXTERNAL;
+
+    else if(pADI_PMG0->RST_STAT & BITM_PMG_RST_STAT_WDRST)
+        return OT_PLAT_RESET_REASON_WATCHDOG;
+  
+   else if(pADI_PMG0->RST_STAT & BITM_PMG_RST_STAT_SWRST)
+        return OT_PLAT_RESET_REASON_SOFTWARE;
+
+   else
+        return OT_PLAT_RESET_REASON_UNKNOWN;
 }
 
 void otPlatWakeHost(void)
