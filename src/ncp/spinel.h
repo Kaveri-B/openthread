@@ -28,9 +28,13 @@
 #ifndef SPINEL_HEADER_INCLUDED
 #define SPINEL_HEADER_INCLUDED 1
 
+#ifdef SPINEL_PLATFORM_HEADER
+#include SPINEL_PLATFORM_HEADER
+#else // ifdef SPINEL_PLATFORM_HEADER
 #include <stdarg.h>
-#include "utils/wrap_stdbool.h"
-#include "utils/wrap_stdint.h"
+#include <stdbool.h>
+#include <stdint.h>
+#endif // else SPINEL_PLATFORM_HEADER
 
 // ----------------------------------------------------------------------------
 
@@ -378,7 +382,7 @@ enum
 
     SPINEL_CAP_THREAD__BEGIN            = 1024,
     SPINEL_CAP_THREAD_COMMISSIONER      = (SPINEL_CAP_THREAD__BEGIN + 0),
-    SPINEL_CAP_THREAD_BA_PROXY          = (SPINEL_CAP_THREAD__BEGIN + 1),
+    SPINEL_CAP_THREAD_TMF_PROXY         = (SPINEL_CAP_THREAD__BEGIN + 1),
     SPINEL_CAP_THREAD__END              = 1152,
 
     SPINEL_CAP_NEST__BEGIN              = 15296,
@@ -668,6 +672,20 @@ typedef enum
      */
     SPINEL_PROP_MAC_SRC_MATCH_EXTENDED_ADDRESSES
                                         = SPINEL_PROP_MAC_EXT__BEGIN + 5,
+
+    /// MAC Blacklist
+    /** Format: `A(t(E))`
+     *
+     * Structure Parameters:
+     *
+     * * `E`: EUI64 address of node
+     */
+    SPINEL_PROP_MAC_BLACKLIST           = SPINEL_PROP_MAC_EXT__BEGIN + 6,
+
+    /// MAC Blacklist Enabled Flag
+    /** Format: `b`
+     */
+    SPINEL_PROP_MAC_BLACKLIST_ENABLED   = SPINEL_PROP_MAC_EXT__BEGIN + 7,
     SPINEL_PROP_MAC_EXT__END            = 0x1400,
 
     SPINEL_PROP_NET__BEGIN              = 0x40,
@@ -851,17 +869,18 @@ typedef enum
     SPINEL_PROP_THREAD_COMMISSIONER_ENABLED
                                         = SPINEL_PROP_THREAD_EXT__BEGIN + 16,
 
-    /// Thread border agent proxy enable
+    /// Thread TMF proxy enable
     /** Format `b`
      *
      * Default value is `false`.
      */
-    SPINEL_PROP_THREAD_BA_PROXY_ENABLED = SPINEL_PROP_THREAD_EXT__BEGIN + 17,
+    SPINEL_PROP_THREAD_TMF_PROXY_ENABLED
+                                        = SPINEL_PROP_THREAD_EXT__BEGIN + 17,
 
-    /// Thread border agent proxy stream
+    /// Thread TMF proxy stream
     /** Format `dSS`
      */
-    SPINEL_PROP_THREAD_BA_PROXY_STREAM  = SPINEL_PROP_THREAD_EXT__BEGIN + 18,
+    SPINEL_PROP_THREAD_TMF_PROXY_STREAM = SPINEL_PROP_THREAD_EXT__BEGIN + 18,
 
     /// Thread "joiner" flag used during discovery scan operation
     /** Format `b`

@@ -41,8 +41,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-#if OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
-#include <openthread/border_agent_proxy.h>
+#if OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
+#include <openthread/tmf_proxy.h>
 #endif
 
 #if OPENTHREAD_ENABLE_BORDER_ROUTER
@@ -220,8 +220,8 @@ const NcpBase::GetPropertyHandlerEntry NcpBase::mGetPropertyHandlerTable[] =
     { SPINEL_PROP_JAM_DETECT_HISTORY_BITMAP, &NcpBase::GetPropertyHandler_JAM_DETECT_HISTORY_BITMAP },
 #endif
 
-#if OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
-    { SPINEL_PROP_THREAD_BA_PROXY_ENABLED, &NcpBase::GetPropertyHandler_BA_PROXY_ENABLED },
+#if OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
+    { SPINEL_PROP_THREAD_TMF_PROXY_ENABLED, &NcpBase::GetPropertyHandler_TMF_PROXY_ENABLED },
 #endif
 
     { SPINEL_PROP_CNTR_TX_PKT_TOTAL, &NcpBase::GetPropertyHandler_MAC_CNTR },
@@ -359,10 +359,10 @@ const NcpBase::SetPropertyHandlerEntry NcpBase::mSetPropertyHandlerTable[] =
     { SPINEL_PROP_JAM_DETECT_BUSY, &NcpBase::SetPropertyHandler_JAM_DETECT_BUSY },
 #endif
 
-#if OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
-    { SPINEL_PROP_THREAD_BA_PROXY_ENABLED, &NcpBase::SetPropertyHandler_BA_PROXY_ENABLED },
-    { SPINEL_PROP_THREAD_BA_PROXY_STREAM, &NcpBase::SetPropertyHandler_THREAD_BA_PROXY_STREAM },
-#endif // OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
+#if OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
+    { SPINEL_PROP_THREAD_TMF_PROXY_ENABLED, &NcpBase::SetPropertyHandler_TMF_PROXY_ENABLED },
+    { SPINEL_PROP_THREAD_TMF_PROXY_STREAM, &NcpBase::SetPropertyHandler_THREAD_TMF_PROXY_STREAM },
+#endif // OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
 
 #if OPENTHREAD_ENABLE_DIAG
     { SPINEL_PROP_NEST_STREAM_MFG, &NcpBase::SetPropertyHandler_NEST_STREAM_MFG },
@@ -681,13 +681,13 @@ NcpFrameBuffer::FrameTag NcpBase::GetLastOutboundFrameTag(void)
     return mTxFrameBuffer.InFrameGetLastTag();
 }
 
-#if OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
-void NcpBase::HandleBorderAgentProxyStream(otMessage *aMessage, uint16_t aLocator, uint16_t aPort, void *aContext)
+#if OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
+void NcpBase::HandleTmfProxyStream(otMessage *aMessage, uint16_t aLocator, uint16_t aPort, void *aContext)
 {
-    static_cast<NcpBase *>(aContext)->HandleBorderAgentProxyStream(aMessage, aLocator, aPort);
+    static_cast<NcpBase *>(aContext)->HandleTmfProxyStream(aMessage, aLocator, aPort);
 }
 
-void NcpBase::HandleBorderAgentProxyStream(otMessage *aMessage, uint16_t aLocator, uint16_t aPort)
+void NcpBase::HandleTmfProxyStream(otMessage *aMessage, uint16_t aLocator, uint16_t aPort)
 {
     otError errorCode = OT_ERROR_NONE;
     uint16_t length = otMessageGetLength(aMessage);
@@ -699,7 +699,7 @@ void NcpBase::HandleBorderAgentProxyStream(otMessage *aMessage, uint16_t aLocato
                         SPINEL_DATATYPE_COMMAND_PROP_S SPINEL_DATATYPE_UINT16_S,
                         SPINEL_HEADER_FLAG | SPINEL_HEADER_IID_0,
                         SPINEL_CMD_PROP_VALUE_IS,
-                        SPINEL_PROP_THREAD_BA_PROXY_STREAM,
+                        SPINEL_PROP_THREAD_TMF_PROXY_STREAM,
                         length
                     ));
 
@@ -733,7 +733,7 @@ exit:
         SendLastStatus(SPINEL_HEADER_FLAG | SPINEL_HEADER_IID_0, SPINEL_STATUS_DROPPED);
     }
 }
-#endif // OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
+#endif // OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
 
 // ----------------------------------------------------------------------------
 // MARK: Outbound Datagram Handling
@@ -2053,8 +2053,8 @@ otError NcpBase::GetPropertyHandler_CAPS(uint8_t header, spinel_prop_key_t key)
                     ));
 #endif
 
-#if OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
-    SuccessOrExit(errorCode = OutboundFrameFeedPacked(SPINEL_DATATYPE_UINT_PACKED_S, SPINEL_CAP_THREAD_BA_PROXY));
+#if OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
+    SuccessOrExit(errorCode = OutboundFrameFeedPacked(SPINEL_DATATYPE_UINT_PACKED_S, SPINEL_CAP_THREAD_TMF_PROXY));
 #endif
 
     // End adding capabilities /////////////////////////////////////////////////
@@ -3322,18 +3322,18 @@ otError NcpBase::GetPropertyHandler_STREAM_NET(uint8_t header, spinel_prop_key_t
     return SendLastStatus(header, SPINEL_STATUS_UNIMPLEMENTED);
 }
 
-#if OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
-otError NcpBase::GetPropertyHandler_BA_PROXY_ENABLED(uint8_t header, spinel_prop_key_t key)
+#if OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
+otError NcpBase::GetPropertyHandler_TMF_PROXY_ENABLED(uint8_t header, spinel_prop_key_t key)
 {
     return SendPropertyUpdate(
                header,
                SPINEL_CMD_PROP_VALUE_IS,
                key,
                SPINEL_DATATYPE_BOOL_S,
-               otBorderAgentProxyIsEnabled(mInstance)
+               otTmfProxyIsEnabled(mInstance)
            );
 }
-#endif // OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
+#endif // OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
 
 #if OPENTHREAD_ENABLE_JAM_DETECTION
 
@@ -3755,12 +3755,12 @@ otError NcpBase::GetPropertyHandler_MAC_WHITELIST(uint8_t header, spinel_prop_ke
 
     SuccessOrExit(errorCode = OutboundFrameBegin());
     SuccessOrExit(
-            errorCode = OutboundFrameFeedPacked(
-                            SPINEL_DATATYPE_COMMAND_PROP_S,
-                            header,
-                            SPINEL_CMD_PROP_VALUE_IS,
-                            key
-                        ));
+        errorCode = OutboundFrameFeedPacked(
+                        SPINEL_DATATYPE_COMMAND_PROP_S,
+                        header,
+                        SPINEL_CMD_PROP_VALUE_IS,
+                        key
+                    ));
 
     for (uint8_t i = 0; (i != 255) && (errorCode == OT_ERROR_NONE); i++)
     {
@@ -3807,6 +3807,62 @@ otError NcpBase::GetPropertyHandler_MAC_WHITELIST_ENABLED(uint8_t header, spinel
                otLinkIsWhitelistEnabled(mInstance)
            );
 }
+
+otError NcpBase::GetPropertyHandler_MAC_BLACKLIST(uint8_t header, spinel_prop_key_t key)
+{
+    otMacBlacklistEntry entry;
+    otError errorCode = OT_ERROR_NONE;
+
+    mDisableStreamWrite = true;
+
+    SuccessOrExit(errorCode = OutboundFrameBegin());
+    SuccessOrExit(
+        errorCode = OutboundFrameFeedPacked(
+                        SPINEL_DATATYPE_COMMAND_PROP_S,
+                        header,
+                        SPINEL_CMD_PROP_VALUE_IS,
+                        key
+                    ));
+
+    for (uint8_t i = 0; (i != 255) && (errorCode == OT_ERROR_NONE); i++)
+    {
+        errorCode = otLinkGetBlacklistEntry(mInstance, i, &entry);
+
+        if (errorCode != OT_ERROR_NONE)
+        {
+            break;
+        }
+
+        if (entry.mValid)
+        {
+            SuccessOrExit(
+                errorCode = OutboundFrameFeedPacked(
+                                SPINEL_DATATYPE_STRUCT_S(
+                                    SPINEL_DATATYPE_EUI64_S   // Extended address
+                                ),
+                                entry.mExtAddress.m8
+                            ));
+        }
+    }
+
+    SuccessOrExit(errorCode = OutboundFrameSend());
+
+exit:
+    mDisableStreamWrite = false;
+    return errorCode;
+}
+
+otError NcpBase::GetPropertyHandler_MAC_BLACKLIST_ENABLED(uint8_t header, spinel_prop_key_t key)
+{
+    return SendPropertyUpdate(
+               header,
+               SPINEL_CMD_PROP_VALUE_IS,
+               key,
+               SPINEL_DATATYPE_BOOL_S,
+               otLinkIsBlacklistEnabled(mInstance)
+           );
+}
+
 
 #endif // OPENTHREAD_ENABLE_MAC_WHITELIST
 
@@ -5176,8 +5232,8 @@ otError NcpBase::SetPropertyHandler_STREAM_NET_INSECURE(uint8_t header, spinel_p
     return errorCode;
 }
 
-#if OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
-otError NcpBase::SetPropertyHandler_THREAD_BA_PROXY_STREAM(uint8_t header, spinel_prop_key_t key,
+#if OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
+otError NcpBase::SetPropertyHandler_THREAD_TMF_PROXY_STREAM(uint8_t header, spinel_prop_key_t key,
                                                            const uint8_t *value_ptr, uint16_t value_len)
 {
     spinel_ssize_t parsedLength;
@@ -5187,7 +5243,7 @@ otError NcpBase::SetPropertyHandler_THREAD_BA_PROXY_STREAM(uint8_t header, spine
     uint16_t locator;
     uint16_t port;
 
-    // THREAD_BA_PROXY_STREAM requires layer 2 security.
+    // THREAD_TMF_PROXY_STREAM requires layer 2 security.
     otMessage *message = otIp6NewMessage(mInstance, true);
 
     if (message == NULL)
@@ -5222,7 +5278,7 @@ otError NcpBase::SetPropertyHandler_THREAD_BA_PROXY_STREAM(uint8_t header, spine
 
     if (errorCode == OT_ERROR_NONE)
     {
-        errorCode = otBorderAgentProxySend(mInstance, message, locator, port);
+        errorCode = otTmfProxySend(mInstance, message, locator, port);
     }
     else if (message)
     {
@@ -5247,7 +5303,7 @@ otError NcpBase::SetPropertyHandler_THREAD_BA_PROXY_STREAM(uint8_t header, spine
 
     return errorCode;
 }
-#endif // OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
+#endif // OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
 
 otError NcpBase::SetPropertyHandler_STREAM_NET(uint8_t header, spinel_prop_key_t key, const uint8_t *value_ptr,
                                                uint16_t value_len)
@@ -5871,6 +5927,88 @@ otError NcpBase::SetPropertyHandler_MAC_WHITELIST_ENABLED(uint8_t header, spinel
     return errorCode;
 }
 
+otError NcpBase::SetPropertyHandler_MAC_BLACKLIST(uint8_t header, spinel_prop_key_t key, const uint8_t *value_ptr,
+                                                  uint16_t value_len)
+{
+    otError errorCode = OT_ERROR_NONE;
+    spinel_ssize_t parsedLength = 1;
+
+    // First, clear the blacklist.
+    otLinkClearBlacklist(mInstance);
+
+    while ((errorCode == OT_ERROR_NONE)
+           && (parsedLength > 0)
+           && (value_len > 0)
+          )
+    {
+        otExtAddress *ext_addr = NULL;
+
+        parsedLength = spinel_datatype_unpack(
+                           value_ptr,
+                           value_len,
+                           SPINEL_DATATYPE_STRUCT_S(
+                               SPINEL_DATATYPE_EUI64_S
+                           ),
+                           &ext_addr
+                       );
+
+        if (parsedLength <= 0)
+        {
+            errorCode = OT_ERROR_PARSE;
+            break;
+        }
+
+        errorCode = otLinkAddBlacklist(mInstance, ext_addr->m8);
+
+        value_ptr += parsedLength;
+        value_len -= parsedLength;
+    }
+
+    if (errorCode == OT_ERROR_NONE)
+    {
+        errorCode = HandleCommandPropertyGet(header, key);
+    }
+    else
+    {
+        errorCode = SendLastStatus(header, ThreadErrorToSpinelStatus(errorCode));
+
+        // We had an error, but we may have actually changed
+        // the state of the blacklist---so we need to report
+        // those incomplete changes via an asynchronous
+        // change event.
+        HandleCommandPropertyGet(SPINEL_HEADER_FLAG | SPINEL_HEADER_IID_0, key);
+    }
+
+    return errorCode;
+}
+
+otError NcpBase::SetPropertyHandler_MAC_BLACKLIST_ENABLED(uint8_t header, spinel_prop_key_t key,
+                                                          const uint8_t *value_ptr, uint16_t value_len)
+{
+    bool isEnabled;
+    spinel_ssize_t parsedLength;
+    otError errorCode = OT_ERROR_NONE;
+
+    parsedLength = spinel_datatype_unpack(
+                       value_ptr,
+                       value_len,
+                       SPINEL_DATATYPE_BOOL_S,
+                       &isEnabled
+                   );
+
+    if (parsedLength > 0)
+    {
+        otLinkSetBlacklistEnabled(mInstance, isEnabled);
+        errorCode = HandleCommandPropertyGet(header, key);
+    }
+    else
+    {
+        errorCode = SendLastStatus(header, SPINEL_STATUS_PARSE_ERROR);
+    }
+
+    return errorCode;
+}
+
 #endif // OPENTHREAD_ENABLE_MAC_WHITELIST
 
 #if OPENTHREAD_ENABLE_RAW_LINK_API
@@ -6425,8 +6563,8 @@ otError NcpBase::SetPropertyHandler_THREAD_NETWORK_ID_TIMEOUT(uint8_t header, sp
 }
 #endif  // OPENTHREAD_FTD
 
-#if OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
-otError NcpBase::SetPropertyHandler_BA_PROXY_ENABLED(uint8_t header, spinel_prop_key_t key,
+#if OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
+otError NcpBase::SetPropertyHandler_TMF_PROXY_ENABLED(uint8_t header, spinel_prop_key_t key,
                                                      const uint8_t *value_ptr, uint16_t value_len)
 {
     bool isEnabled;
@@ -6444,11 +6582,11 @@ otError NcpBase::SetPropertyHandler_BA_PROXY_ENABLED(uint8_t header, spinel_prop
     {
         if (isEnabled)
         {
-            SuccessOrExit(errorCode = otBorderAgentProxyStart(mInstance, &NcpBase::HandleBorderAgentProxyStream, this));
+            SuccessOrExit(errorCode = otTmfProxyStart(mInstance, &NcpBase::HandleTmfProxyStream, this));
         }
         else
         {
-            SuccessOrExit(errorCode = otBorderAgentProxyStop(mInstance));
+            SuccessOrExit(errorCode = otTmfProxyStop(mInstance));
         }
 
         SuccessOrExit(errorCode = HandleCommandPropertyGet(header, key));
@@ -6467,7 +6605,7 @@ exit:
 
     return errorCode;
 }
-#endif // OPENTHREAD_ENABLE_BORDER_AGENT_PROXY && OPENTHREAD_FTD
+#endif // OPENTHREAD_ENABLE_TMF_PROXY && OPENTHREAD_FTD
 
 #if OPENTHREAD_ENABLE_JAM_DETECTION
 
@@ -7056,7 +7194,6 @@ otError NcpBase::InsertPropertyHandler_MAC_WHITELIST(uint8_t header, spinel_prop
     otExtAddress *ext_addr = NULL;
     int8_t rssi = RSSI_OVERRIDE_DISABLED;
 
-
     if (value_len > static_cast<spinel_ssize_t>(sizeof(otExtAddress)))
     {
         parsedLength = spinel_datatype_unpack(
@@ -7087,6 +7224,47 @@ otError NcpBase::InsertPropertyHandler_MAC_WHITELIST(uint8_t header, spinel_prop
         {
             errorCode = otLinkAddWhitelistRssi(mInstance, ext_addr->m8, rssi);
         }
+
+        if (errorCode == OT_ERROR_NONE)
+        {
+            errorCode = SendPropertyUpdate(
+                            header,
+                            SPINEL_CMD_PROP_VALUE_INSERTED,
+                            key,
+                            value_ptr,
+                            value_len
+                        );
+        }
+        else
+        {
+            errorCode = SendLastStatus(header, ThreadErrorToSpinelStatus(errorCode));
+        }
+    }
+    else
+    {
+        errorCode = SendLastStatus(header, SPINEL_STATUS_PARSE_ERROR);
+    }
+
+    return errorCode;
+}
+
+otError NcpBase::InsertPropertyHandler_MAC_BLACKLIST(uint8_t header, spinel_prop_key_t key,
+                                                     const uint8_t *value_ptr, uint16_t value_len)
+{
+    otError errorCode = OT_ERROR_NONE;
+    spinel_ssize_t parsedLength;
+    otExtAddress *ext_addr = NULL;
+
+    parsedLength = spinel_datatype_unpack(
+                       value_ptr,
+                       value_len,
+                       SPINEL_DATATYPE_EUI64_S,
+                       &ext_addr
+                   );
+
+    if (parsedLength > 0)
+    {
+        errorCode = otLinkAddBlacklist(mInstance, ext_addr->m8);
 
         if (errorCode == OT_ERROR_NONE)
         {
@@ -7532,6 +7710,40 @@ otError NcpBase::RemovePropertyHandler_MAC_WHITELIST(uint8_t header, spinel_prop
     if (parsedLength > 0)
     {
         otLinkRemoveWhitelist(mInstance, ext_addr_ptr->m8);
+
+        errorCode = SendPropertyUpdate(
+                        header,
+                        SPINEL_CMD_PROP_VALUE_REMOVED,
+                        key,
+                        value_ptr,
+                        value_len
+                    );
+    }
+    else
+    {
+        errorCode = SendLastStatus(header, SPINEL_STATUS_PARSE_ERROR);
+    }
+
+    return errorCode;
+}
+
+otError NcpBase::RemovePropertyHandler_MAC_BLACKLIST(uint8_t header, spinel_prop_key_t key,
+                                                     const uint8_t *value_ptr, uint16_t value_len)
+{
+    otError errorCode = OT_ERROR_NONE;
+    spinel_ssize_t parsedLength;
+    otExtAddress *ext_addr_ptr = NULL;
+
+    parsedLength = spinel_datatype_unpack(
+                       value_ptr,
+                       value_len,
+                       SPINEL_DATATYPE_EUI64_S,
+                       &ext_addr_ptr
+                   );
+
+    if (parsedLength > 0)
+    {
+        otLinkRemoveBlacklist(mInstance, ext_addr_ptr->m8);
 
         errorCode = SendPropertyUpdate(
                         header,
