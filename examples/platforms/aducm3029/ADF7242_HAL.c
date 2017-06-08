@@ -68,7 +68,6 @@ uint8_t spi_devicemem[ADI_SPI_MEMORY_SIZE] __attribute__((aligned(4)));
 
 static ADI_SPI_HANDLE hDevice;
 
-static uint8_t xintMemory[ADI_XINT_MEMORY_SIZE] __attribute__((aligned(4)));
 /*----------------------------------------------------------------------------*/
 
 /*!
@@ -140,10 +139,15 @@ ADF7242_Result_t IRQ_init(void)
 {
   ADF7242_Result_t eResult = ADF_SUCCESS;
 
-  adi_xint_Init(xintMemory, ADI_XINT_MEMORY_SIZE);
-  adi_xint_RegisterCallback (XINT_EVT_NUM, trx_irq_cb, NULL);
-  adi_xint_EnableIRQ (XINT_EVT_NUM, ADI_XINT_IRQ_FALLING_EDGE);
-
+  IRQn_Type eIrq;
+     /* init the GPIO service */
+  adi_gpio_InputEnable(ADI_GPIO_PORT1, ADI_GPIO_PIN_0, true);
+  adi_gpio_SetGroupInterruptPolarity(ADI_GPIO_PORT1, ADI_GPIO_PIN_0);
+  /* Enable pin interrupt on group interrupt A */
+  adi_gpio_SetGroupInterruptPins(ADI_GPIO_PORT1, ADI_GPIO_INTA_IRQ, ADI_GPIO_PIN_0);
+  eIrq = SYS_GPIO_INTA_IRQn;
+  /* Register the callback */
+  adi_gpio_RegisterCallback (ADI_GPIO_INTA_IRQ, trx_irq_cb, (void*)&eIrq);
   return eResult;
 }
 /*----------------------------------------------------------------------------*/
@@ -201,11 +205,11 @@ ADF7242_Result_t rf_spi_transaction(uint8_t *pTxbuf, uint16_t txlen,
 
 void Enable_TRX_IRQ(void)
 {
-  NVIC_EnableIRQ(XINT_EVT1_IRQn);
+   NVIC_EnableIRQ(SYS_GPIO_INTA_IRQn);
 }
 void Disable_TRX_IRQ(void)
 {
-  NVIC_DisableIRQ(XINT_EVT1_IRQn);
+  NVIC_DisableIRQ(SYS_GPIO_INTA_IRQn);
 }
 
  int8_t PhyWakeUp(void)

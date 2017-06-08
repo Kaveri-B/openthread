@@ -85,8 +85,7 @@ void adi_initpinmux(void)
     *((volatile uint32_t *)REG_GPIO1_CFG) = SPI1_SCLK_PORTP1_MUX | 
                                             SPI1_MISO_PORTP1_MUX | 
                                             SPI1_MOSI_PORTP1_MUX |
-					    SPI1_CS_0_PORTP1_MUX |
-					    SYS_WAKEUP_SYS_WAKE1_PORTP1_MUX;
+					    SPI1_CS_0_PORTP1_MUX;
     
     *((volatile uint32_t *)REG_GPIO2_CFG) = SPI2_CS_2_PORTP2_MUX | 
                                             SPI2_CS_3_PORTP2_MUX;

@@ -42,8 +42,8 @@
 #include <string.h>
 
 #include "platform-aducm3029.h"
+#include "ADF7242_Config.h"
 #include "ADF7242.h"
-
 
 static uint8_t eui64[OT_EXT_ADDRESS_SIZE] = {0x00, 0x05, 0xf7, 0xfe, 0xff, 0x00, 0x00, 0x02};
 
@@ -54,6 +54,7 @@ static bool sTxDone = false;
 static bool sRxDone = false;
 static bool sAckFramePend = false;
 static otError sTxStatus;
+static uint8_t sTxData[OT_RADIO_FRAME_MAX_SIZE];
 static uint8_t sRxData[OT_RADIO_FRAME_MAX_SIZE];
 static uint8_t sShortAddrCount = 0;
 static uint8_t sExtAddrCount = 0;
@@ -375,7 +376,10 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
     /* If Radio is busy in receiving the packet, then return error */
     if(ADF7242_is_trx_busy())
     {
-        return OT_ERROR_BUSY;
+        sTxDone= true;
+	sTxStatus = OT_ERROR_CHANNEL_ACCESS_FAILURE;
+
+        return OT_ERROR_NONE;
     }
 
     channelFreq = (2405 + 5 * (aFrame->mChannel - 11)) * 1000000;
@@ -397,7 +401,11 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
     {
         /* Packet transmission failed due to TRX busy */
         sRadioState = OT_RADIO_STATE_RECEIVE;
-        return OT_ERROR_BUSY;
+
+        sTxDone= true;
+	sTxStatus = OT_ERROR_CHANNEL_ACCESS_FAILURE;
+
+        return OT_ERROR_NONE;
     }
 
     return OT_ERROR_NONE;
@@ -475,8 +483,28 @@ void aducm3029RadioInit(void)
 {
     ADF7242_init();
     sRadioState = OT_RADIO_STATE_DISABLED;
-}
+    /* Initialize Tx frame */
+    sTxFrame.mPsdu = sTxData;
+    sTxFrame.mLength = 0;
+    sTxFrame.mChannel = (((TRX_config_params.channelFreq/1000000) / 5) - 2405) + 11;
+    sTxFrame.mPower = TRX_config_params.txPower;
+    sTxFrame.mLqi = 0;
+    sTxFrame.mMaxTxAttempts = ADF7242_CONF_MAX_FRAME_RETRY;  
+    sTxFrame.mSecurityValid = false;
+    sTxFrame.mDidTX = false;
+    sTxFrame.mIsARetx = false;
+    /* Initialize Rx frame */
+    sRxFrame.mPsdu = sRxData;
+    sRxFrame.mLength = 0;
+    sRxFrame.mChannel = (((TRX_config_params.channelFreq/1000000) / 5) - 2405) + 11;
+    sRxFrame.mPower = TRX_config_params.txPower;
+    sRxFrame.mLqi = 0;
+    sRxFrame.mMaxTxAttempts = ADF7242_CONF_MAX_FRAME_RETRY;  
+    sRxFrame.mSecurityValid = false;
+    sRxFrame.mDidTX = false;
+    sRxFrame.mIsARetx = false;
 
+}
 void aducm3029RadioProcess(otInstance *aInstance)
 {
     if(sTxDone)
@@ -507,7 +535,7 @@ void ADF7242_rx_done(uint8_t *pRx_buf, uint16_t rxlen, int8_t rssi, uint8_t lqi)
     sRxDone = true;
 
     /* Copy data to Rx buffer */
-    memcpy(sRxData, pRx_buf, rxlen-2);
+    memcpy(sRxData, pRx_buf + 1, rxlen-2);
 
     /* Fill receive frame structure */
     sRxFrame.mPsdu = sRxData;
