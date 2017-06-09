@@ -63,8 +63,6 @@
 #define SPI1_CS_0_PORTP1_MUX  ((uint32_t) ((uint32_t) 1<<18))
 #define SYS_WAKEUP_SYS_WAKE1_PORTP1_MUX  ((uint16_t) ((uint16_t) 1<<0))
 
-static uint8_t FlashDeviceMem[ADI_FEE_MEMORY_SIZE]  __attribute__ ((aligned (4)));
-static ADI_FEE_HANDLE hFlashDevice = NULL;
 static uint8_t sGPIOCallbackMem[ADI_GPIO_MEMORY_SIZE] __attribute__((aligned(4)));
 
 static void adi_wdt_callback(void *pCBParam, uint32_t Event, void *pArg)
@@ -112,13 +110,11 @@ void PlatformInit(int argc, char *argv[])
     adi_pwr_EnableClockSource(ADI_CLOCK_SOURCE_LFXTAL, true);
     adi_pwr_SetClockDivider(ADI_CLOCK_HCLK, 1);
     adi_pwr_SetClockDivider(ADI_CLOCK_PCLK, 1);
-    adi_fee_Open(0, FlashDeviceMem, sizeof(FlashDeviceMem), &hFlashDevice);
     /* Initialize GPIO */
     adi_gpio_Init(sGPIOCallbackMem, ADI_GPIO_MEMORY_SIZE);
 
     /* Set priorities */
     NVIC_SetPriority(SPI1_EVT_IRQn,0);
-    NVIC_SetPriority(XINT_EVT1_IRQn,1);
     NVIC_SetPriority(SYS_GPIO_INTA_IRQn,1);
       
     aducm3029AlarmInit();
