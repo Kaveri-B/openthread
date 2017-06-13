@@ -43,6 +43,9 @@
 // MARK: -
 // MARK: Headers
 
+
+#include <openthread/config.h>
+
 #include "spinel.h"
 
 #include <assert.h>
@@ -1891,10 +1894,6 @@ const char *spinel_capability_to_cstr(unsigned int capability)
 /* -------------------------------------------------------------------------- */
 
 #if SPINEL_SELF_TEST
-
-#include <stdlib.h>
-#include "utils/wrap_string.h"
-
 
 int
 main(void)

@@ -32,11 +32,7 @@
  */
 
 
-#ifdef OPENTHREAD_CONFIG_FILE
-#include OPENTHREAD_CONFIG_FILE
-#else
-#include <openthread-config.h>
-#endif
+#include <openthread/config.h>
 
 #include "key_manager.hpp"
 
@@ -136,7 +132,7 @@ otError KeyManager::SetMasterKey(const otMasterKey &aKey)
         children[i].SetMleFrameCounter(0);
     }
 
-    mNetif.SetStateChangedFlags(OT_NET_KEY_SEQUENCE_COUNTER);
+    mNetif.SetStateChangedFlags(OT_CHANGED_THREAD_KEY_SEQUENCE_COUNTER);
 
 exit:
     return error;
@@ -207,7 +203,7 @@ void KeyManager::SetCurrentKeySequence(uint32_t aKeySequence)
         mKeyRotationTimer.Start(Timer::HoursToMsec(mKeyRotationTime));
     }
 
-    mNetif.SetStateChangedFlags(OT_NET_KEY_SEQUENCE_COUNTER);
+    mNetif.SetStateChangedFlags(OT_CHANGED_THREAD_KEY_SEQUENCE_COUNTER);
 
 exit:
     return;
