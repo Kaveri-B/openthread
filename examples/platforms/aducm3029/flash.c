@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include <openthread-config.h>
+#include <openthread/config.h>
 #include <openthread-core-aducm3029-config.h>
 #include "utils/code_utils.h"
 #include "utils/flash.h"

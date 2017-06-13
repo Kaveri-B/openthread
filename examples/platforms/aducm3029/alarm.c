@@ -35,7 +35,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <openthread-config.h>
+#include <openthread/config.h>
 #include "openthread/openthread.h"
 #include "openthread/platform/platform.h"
 #include "openthread/platform/alarm.h"
