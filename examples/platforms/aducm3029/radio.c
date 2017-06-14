@@ -397,7 +397,7 @@ otError otPlatRadioTransmit(otInstance *aInstance, otRadioFrame *aFrame)
 
     /* Initiate packet transmission */
     sRadioState = OT_RADIO_STATE_TRANSMIT;
-    if(ADF7242_tx(aFrame->mPsdu, aFrame->mLength + 2) != 0)
+    if(ADF7242_tx(aFrame->mPsdu, aFrame->mLength) != 0)
     {
         /* Packet transmission failed due to TRX busy */
         sRadioState = OT_RADIO_STATE_RECEIVE;
@@ -535,11 +535,11 @@ void ADF7242_rx_done(uint8_t *pRx_buf, uint16_t rxlen, int8_t rssi, uint8_t lqi)
     sRxDone = true;
 
     /* Copy data to Rx buffer */
-    memcpy(sRxData, pRx_buf + 1, rxlen-2);
+    memcpy(sRxData, pRx_buf + 1, rxlen);
 
     /* Fill receive frame structure */
     sRxFrame.mPsdu = sRxData;
-    sRxFrame.mLength = rxlen-2;
+    sRxFrame.mLength = rxlen;
     sRxFrame.mChannel = (((TRX_config_params.channelFreq/1000000) / 5) - 2405) + 11;
     sRxFrame.mPower = rssi;
     sRxFrame.mLqi = lqi;
