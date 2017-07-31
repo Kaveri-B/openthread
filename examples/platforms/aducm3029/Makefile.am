@@ -28,7 +28,9 @@
 
 include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
-lib_LIBRARIES                                 = libopenthread-aducm3029.a
+lib_LIBRARIES                                 						     = \
+    libopenthread-aducm3029.a								       \
+    $(NULL)
 
 # Do not enable -pedantic-errors for rail
 override CFLAGS                              := $(filter-out -pedantic-errors,$(CFLAGS))
@@ -38,7 +40,7 @@ ADUCM3029_SDK_SRCDIR                            = $(top_srcdir)/third_party/adi/
 
 libopenthread_aducm3029_a_CPPFLAGS                                                = \
     -D__ADUCM3029__                                                             \
-    -D__START=main                                                             \
+    -D__SILICON_REVISION__=0xffff                                              \
     -D__STARTUP_CLEAR_BSS                                                       \
     -DADI_DISABLE_INSTRUCTION_SRAM                                              \
     -I$(top_srcdir)/include                                                     \
