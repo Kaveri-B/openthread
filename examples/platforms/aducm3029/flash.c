@@ -46,6 +46,7 @@
 static uint8_t FlashDeviceMem[ADI_FEE_MEMORY_SIZE]  __attribute__ ((aligned (4)));
 static ADI_FEE_HANDLE hFlashDevice = NULL;
 static uint8_t sFlashWriteBuf[SETTINGS_CONFIG_PAGE_SIZE];
+static uint8_t flashInitFlag = 0;
 
 static uint32_t flashAddrMap(uint32_t addr)
 {
@@ -54,7 +55,10 @@ static uint32_t flashAddrMap(uint32_t addr)
 
 otError utilsFlashInit(void)
 {
-    adi_fee_Open(0, FlashDeviceMem, sizeof(FlashDeviceMem), &hFlashDevice);
+    if(flashInitFlag == 0) {
+        flashInitFlag = 1;
+        adi_fee_Open(0, FlashDeviceMem, sizeof(FlashDeviceMem), &hFlashDevice);
+    }
     return OT_ERROR_NONE;
 }
 
@@ -71,7 +75,7 @@ otError utilsFlashErasePage(uint32_t aAddress)
 
     /* Check address is out of range */
     otEXPECT_ACTION(flashAddrMap(aAddress) < ADI_END_ADDR_OF_FLASH, error = OT_ERROR_INVALID_ARGS);
-    adi_fee_GetPageNumber(hFlashDevice, aAddress, &nStartPage);
+    adi_fee_GetPageNumber(hFlashDevice, flashAddrMap(aAddress), &nStartPage);
     otEXPECT_ACTION(adi_fee_PageErase (hFlashDevice, nStartPage, nStartPage, &hwError) == ADI_FEE_SUCCESS, error = OT_ERROR_FAILED) ;
 
 exit:
